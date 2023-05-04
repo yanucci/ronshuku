@@ -9,6 +9,7 @@ config = configparser.ConfigParser()
 config.read('.config')
 
 openai.api_key = config.get('open_api_key', 'key')
+print("OpenAI API key:", openai.api_key)
 
 
 def summarize_paper(paper):
@@ -30,18 +31,19 @@ def summarize_paper(paper):
 
     text = f"title: {paper.title}\nbody: {paper.summary}"
     response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {'role': 'system', 'content': system},
-                    {'role': 'user', 'content': text}
-                ],
-                temperature=0.2,
-            )
+        model="gpt-3.5-turbo",
+        messages=[
+            {'role': 'system', 'content': system},
+            {'role': 'user', 'content': text}
+        ],
+        temperature=0.2,
+    )
 
     summary = response['choices'][0]['message']['content']
     date_str = paper.published.strftime("%Y-%m-%d %H:%M:%S")
     message = f"発行日: {date_str}\n{paper.entry_id}\n{paper.title}\n{summary}\n"
     return message
+
 
 def get_arxiv(query: str, paper_all_numb: int = 5, paper_select_numb: int = 3):
     # search arxiv paper
